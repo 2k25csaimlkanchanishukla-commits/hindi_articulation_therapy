@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>वाक-मित्र (Vaak-Mitra) - Hindi Speech & Misarticulation Therapy Suite</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+  <!-- Floating animated bubbles background -->
+  <div class="bubble-bg" id="bubbleBg"></div>
+
+  <!-- Main App Header -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="mascot-avatar" id="mascotAvatar" title="बोलू तोता">🦜</div>
+      <div class="header-titles">
+        <h1 id="appTitle">वाक-मित्र (Vaak-Mitra)</h1>
+        <p id="appTagline">बच्चों के लिए हिंदी वाक् एवं उच्चारण थेरेपी 🌟</p>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <label for="langSelect" style="display:none;">भाषा</label>
+      <select id="langSelect" class="lang-selector" onchange="changeLanguage(this.value)">
+        <option value="hi" selected>🇮🇳 हिन्दी (Hindi)</option>
+        <option value="en">🇬🇧 English</option>
+        <option value="hinglish">🇮🇳 Hinglish</option>
+      </select>
+      <button class="sound-toggle-btn" id="soundToggleBtn" onclick="toggleAudio()" title="Sound Effects">🔊</button>
+    </div>
+  </header>
+
+  <!-- Mascot Live Greeting & Star Counter -->
+  <div class="companion-bar">
+    <div class="companion-speech">
+      <span style="font-size: 1.6rem;">💬</span>
+      <span id="companionText">नमस्ते दोस्त! मैं हूँ बोलू तोता 🦜 चलो मिलकर सुंदर बोलना सीखें!</span>
+    </div>
+    <div class="badge-reward">
+      <span>⭐ कुल सितारे:</span>
+      <span id="totalStarsCount" style="font-size: 1.3rem;">0</span>
+    </div>
+  </div>
+
+  <!-- 12 Therapeutic Processing Modules Navigation Grid -->
+  <nav class="nav-container">
+    <div class="module-nav-grid">
+      <button class="nav-tab-btn active" onclick="switchModule('position')" data-tab="position">🗣️ 1. ध्वनि स्थान (Mouth Guide)</button>
+      <button class="nav-tab-btn" onclick="switchModule('phoneme')" data-tab="phoneme">🔤 2. वर्ण स्तर (IMF Words)</button>
+      <button class="nav-tab-btn" onclick="switchModule('flashcards')" data-tab="flashcards">🖼️ 3. चित्र कार्ड (Flashcards)</button>
+      <button class="nav-tab-btn" onclick="switchModule('asr')" data-tab="asr">🎙️ 4. आवाज़ ASR स्कोरर</button>
+      <button class="nav-tab-btn" onclick="switchModule('minimal-pairs')" data-tab="minimal-pairs">⚖️ 5. समान युग्म (Minimal Pairs)</button>
+      <button class="nav-tab-btn" onclick="switchModule('balloon-game')" data-tab="balloon-game">🎈 6. गुब्बारा खेल (Game)</button>
+      <button class="nav-tab-btn" onclick="switchModule('twisters')" data-tab="twisters">🌀 7. जीभ घुमाव (Twisters)</button>
+      <button class="nav-tab-btn" onclick="switchModule('stories')" data-tab="stories">📖 8. वाक्य व कहानी (Stories)</button>
+      <button class="nav-tab-btn" onclick="switchModule('ai-therapist')" data-tab="ai-therapist">🤖 9. बोल मित्र AI (Dr. Bol)</button>
+      <button class="nav-tab-btn" onclick="switchModule('analytics')" data-tab="analytics">📊 10. प्रगति रिपोर्ट (Dashboard)</button>
+      <button class="nav-tab-btn" onclick="switchModule('session-builder')" data-tab="session-builder">📋 11. कस्टम सत्र (Builder)</button>
+      <button class="nav-tab-btn" onclick="switchModule('oral-gym')" data-tab="oral-gym">👅 12. मुख व्यायाम (Oral Gym)</button>
+    </div>
+  </nav>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+
+    <!-- Global Sound Selection Row -->
+    <div class="sound-selector-row">
+      <strong id="labelSelectSound">ध्वनि चुनें (Target Sound):</strong>
+      <div id="soundPillsContainer" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+    </div>
+
+    <!-- =========================================================================
+         MODULE 1: Sound Position & Articulatory Anatomy Guide
+         ========================================================================= -->
+    <section id="module-position" class="therapy-section active">
+      <div class="section-header">
+        <div class="section-title">
+          <span style="font-size: 2rem;">🗣️</span>
+          <div>
+            <h2 id="titlePosition">ध्वनि स्थान व मुखाकृति गाइड (Articulatory Position Level)</h2>
+            <p style="color: var(--text-muted);">मुख के अंगों (होंठ, जीभ, दाँत, तालु) की सही स्थिति समझें</p>
+          </div>
+        </div>
+        <span class="section-tag" id="currentSoundTag">लक्ष्य वर्ण: क (/k/)</span>
+      </div>
+
+      <div class="anatomy-layout">
+        <div class="mouth-visualizer-card">
+          <div class="mouth-svg-container" id="mouthSvgWrapper">
+            <!-- Dynamic SVG Mouth Guide Diagram -->
+            <svg viewBox="0 0 320 240" width="100%" height="100%">
+              <!-- Background head profile contour -->
+              <path d="M 60 40 Q 160 20 220 70 Q 250 110 240 160 Q 220 210 160 220 Q 90 220 70 170 Z" fill="#fef2f2" stroke="#fca5a5" stroke-width="4"/>
+              
+              <!-- Hard and Soft Palate (Roof) -->
+              <path d="M 120 80 Q 180 75 220 110" fill="none" stroke="#f43f5e" stroke-width="8" stroke-linecap="round"/>
+              <text x="140" y="65" font-size="12" fill="#be123c" font-weight="bold">तालु (Palate)</text>
+              
+              <!-- Upper Teeth -->
+              <rect x="210" y="105" width="10" height="14" rx="3" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+              <!-- Lower Teeth -->
+              <rect x="210" y="145" width="10" height="14" rx="3" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+              
+              <!-- Lips -->
+              <path id="svgUpperLip" d="M 218 100 Q 245 102 230 115" fill="#fb7185" stroke="#e11d48" stroke-width="2"/>
+              <path id="svgLowerLip" d="M 218 160 Q 245 155 230 145" fill="#fb7185" stroke="#e11d48" stroke-width="2"/>
+
+              <!-- Dynamic Tongue Articulator (changes shape based on target phoneme) -->
+              <path id="svgTongue" d="M 120 160 Q 160 155 190 140 Q 210 135 210 148 Q 180 180 120 175 Z" fill="#f43f5e" stroke="#be123c" stroke-width="3"/>
+              
+              <!-- Airflow arrows / Vibration indicator -->
+              <g id="svgAirflow">
+                <circle cx="170" cy="115" r="8" fill="#38bdf8" opacity="0.8">
+                  <animate attributeName="r" values="4;12;4" dur="1.5s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values="0.9;0.2;0.9" dur="1.5s" repeatCount="indefinite"/>
+                </circle>
+              </g>
+            </svg>
+          </div>
+          <button class="btn-bubbly" onclick="playTargetSoundSample()">उच्चारण नमूना सुनें 🔊</button>
+        </div>
+
+        <div class="anatomy-info-card">
+          <h3 id="anatomySoundName">कण्ठ्य वर्ण 'क' का उच्चारण नियम</h3>
+          <div class="articulatory-step">
+            <strong>👅 जीभ की स्थिति:</strong>
+            <p id="anatomyTongueDesc">जीभ का पिछला हिस्सा ऊपर उठकर कोमल तालु (Soft Palate) को छूता है।</p>
+          </div>
+          <div class="articulatory-step">
+            <strong>👄 होंठ व दाँत:</strong>
+            <p id="anatomyLipsDesc">होंठ सामान्य खुले रहते हैं, दाँतों के बीच हल्का अंतर होता है।</p>
+          </div>
+          <div class="articulatory-step">
+            <strong>💡 बोलू का जादुई इशारा (Visual Cue):</strong>
+            <p id="anatomyCueDesc">गले पर उंगली रखें और हवा को रोककर झटके से 'क' बोलें!</p>
+          </div>
+          <div style="margin-top: 14px; background: #fff1f2; padding: 12px; border-radius: 16px;">
+            <strong style="color: #be123c;">⚠️ सामान्य त्रुटि (Common Error):</strong>
+            <p id="anatomyCommonErrors" style="color: #881337; margin-top: 4px;">'क' की जगह 'त' बोलना (जैसे 'केला' को 'तेला' बोलना)</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         MODULE 2: Phoneme Level IMF Explorer (Initial, Medial, Final)
+         ========================================================================= -->
+    <section id="module-phoneme" class="therapy-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span style="font-size: 2rem;">🔤</span>
+          <div>
+            <h2>वर्ण स्तर शब्द अभ्यास (Initial, Medial & Final Positions)</h2>
+            <p style="color: var(--text-muted);">शब्द के आदि, मध्य और अंतिम भाग में ध्वनि की स्थिति</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="imf-tabs">
+        <button class="imf-tab-btn active" onclick="switchImfTab('initial')" id="tabBtnInitial">1. आदि स्तर (Initial - शुरुआत)</button>
+        <button class="imf-tab-btn" onclick="switchImfTab('medial')" id="tabBtnMedial">2. मध्य स्तर (Medial - बीच में)</button>
+        <button class="imf-tab-btn" onclick="switchImfTab('final')" id="tabBtnFinal">3. अंतिम स्तर (Final - अंत में)</button>
+      </div>
+
+      <div class="flashcard-grid" id="imfCardsContainer">
+        <!-- Rendered via JavaScript -->
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         MODULE 3: Picture Flashcard Lab
+         ========================================================================= -->
+    <section id="module-flashcards" class="therapy-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span style="font-size: 2rem;">🖼️</span>
+          <div>
+            <h2>चित्र कार्ड थेरेपी (Picture Flashcards Deck)</h2>
+            <p style="color: var(--text-muted);">चित्र देखकर शब्द पहचानें, सुनें और दोहराएं</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flashcard-grid" id="allFlashcardsContainer">
+        <!-- Dynamic flashcards -->
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         MODULE 4: Live Voice Recording & ASR Phonetic Scorer
+         ========================================================================= -->
+    <section id="module-asr" class="therapy-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span style="font-size: 2rem;">🎙️</span>
+          <div>
+            <h2>आवाज़ परीक्षण व ASR स्कोरर (Real-time Speech Recognition)</h2>
+            <p style="color: var(--text-muted);">माइक में बोलें और अपने उच्चारण का सटीक स्कोर देखें</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="asr-tester-container">
+        <div class="target-practice-card">
+          <h3 style="color: #4338ca; margin-bottom: 8px;">लक्ष्य शब्द (Target Word to Speak):</h3>
+          <div id="asrTargetWordDisplay" style="font-size: 3rem; font-weight: 900; color: #1e1b4b; margin: 12px 0;">केला</div>
+          <div id="asrTargetTranslit" style="font-size: 1.2rem; color: #6366f1; font-weight: 700;">(Kela - Banana 🍌)</div>
+          
+          <button class="record-btn-giant" id="btnRecordAsr" onclick="toggleVoiceRecording()">
+            🎙️
+          </button>
+          <p id="asrStatusText" style="font-weight: 800; color: #ef4444; margin-top: 8px;">माइक बटन दबाएं और बोलें</p>
+
+          <canvas id="speechWaveCanvas" class="speech-wave-canvas"></canvas>
+        </div>
+
+        <div class="score-display-card">
+          <h3>उच्चारण सटीकता स्कोर (Pronunciation Score)</h3>
+          <div class="score-gauge" id="scoreGauge">
+            <div class="score-gauge-inner">
+              <div class="score-number" id="scoreValue">--%</div>
+            </div>
+          </div>
+
+          <div class="star-rating" id="scoreStars">⭐⭐⭐</div>
+          <p id="scoreFeedbackText" style="font-size: 1.2rem; font-weight: 800; color: #059669;">बोलकर परीक्षण करें!</p>
+
+          <div class="phoneme-comparison">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span>आपने बोला (Recognized):</span>
+              <strong id="recognizedSpeechText" style="color: #3b82f6;">--</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span>त्रुटि वर्गीकरण (Error Category):</span>
+              <strong id="errorClassificationText" style="color: #d97706;">None</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         MODULE 5: Minimal Pairs Discrimination Challenge
+         ========================================================================= -->
+    <section id="module-minimal-pairs" class="therapy-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span style="font-size: 2rem;">⚖️</span>
+          <div>
+            <h2>समान युग्म भेद (Minimal Pairs Discrimination)</h2>
+            <p style="color: var(--text-muted);">मिलते-जुलते शब्दों के अंतर को पहचानें (जैसे रोटी vs लोटी, ताला vs टाला)</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pair-match-container" id="minimalPairsContainer">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         MODULE 6: Bubbly Balloon Pop Articulation Game
+         ========================================================================= -->
+    <section id="module-balloon-game" class="therapy-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span style="font-size: 2rem;">🎈</span>
+          <div>
+            <h2>गुब्बारा फोड़ो खेल (Balloon Pop Voice Game)</h2>
+            <p style="color: var(--text-muted);">गुब्बारे में लिखे शब्द को सही बोलें और गुब्बारा फोड़कर अंक पाएं!</p>
+          </div>
+        </div>
+        <button class="btn-bubbly" onclick="startBalloonGame()" id="btnStartGame">🎮 खेल शुरू करें</button>
+      </div>
+
+      <div class="game-arena">
+        <div class="game-hud">
+          <div class="hud-pill">🎯 स्कोर: <span id="gameScoreDisplay">0</span></div>
+          <div class="hud-pill">🎯 लक्ष्य शब्द: <span id="gameTargetWord" style="color: #dc2626;">--</span></div>
+          <div class="hud-pill">⏱️ समय: <span id="gameTimerDisplay">60s</span></div>
+        </div>
+        <canvas id="balloonCanvas" class="balloon-canvas"></canvas>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         MODULE 7: Tongue Twisters & Alliteration Drills
+         ========================================================================= -->
+    <section id="module-twisters" class="therapy-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span style="font-size: 2rem;">🌀</span>
+          <div>
+            <h2>जीभ घुमाव व तुकांत पहेलियाँ (Tongue Twisters)</h2>
+            <p style="color: var(--text-muted);">जीभ की चपलता और स्पष्ट उच्चारण के लिए मजेदार पंक्तियाँ</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="twistersContainer">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         MODULE 8: Story & Sentence Level Generalization
+         ========================================================================= -->
+    <section id="module-stories" class="therapy-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span style="font-size: 2rem;">📖</span>
+          <div>
+            <h2>वाक्य व लघु कथा स्तर (Sentence & Story Level)</h2>
+            <p style="color: var(--text-muted);">दैनिक बातचीत में सही उच्चारण का प्रयोग</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="storiesContainer">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         MODULE 9: AI Speech Therapist "Dr. Bol"
+         ========================================================================= -->
+    <section id="module-ai-therapist" class="therapy-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span style="font-size: 2rem;">🤖</span>
+          <div>
+            <h2>बोल मित्र AI (Dr. Bol - Virtual Speech Therapist)</h2>
+            <p style="color: var(--text-muted);">AI स्पीच थेरेपिस्ट से सलाह लें, नई थेरेपी गतिविधियाँ बनाएं</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-chat-window">
+        <div class="chat-messages" id="chatMessagesContainer">
+          <div class="chat-bubble bot">
+            👋 नमस्ते! मैं हूँ <strong>Dr. Bol (बोल मित्र AI)</strong>, आपका डिजिटल स्पीच थेरेपिस्ट। मुझे बताएं कि बच्चे को किस ध्वनि (क, र, स, त) के उच्चारण में कठिनाई हो रही है, मैं विशेष सुझाव व अभ्यास तैयार करूँगा!
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <input type="text" id="aiChatInput" class="chat-input" placeholder="उदा. 'बच्चा र को ल बोलता है, मुझे अभ्यास बताएं'..." onkeypress="handleChatKey(event)">
+          <button class="btn-send" onclick="sendAiMessage()">भेजें 🚀</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         MODULE 10: Clinician & Parent Analytics Dashboard
+         ========================================================================= -->
+    <section id="module-analytics" class="therapy-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span style="font-size: 2rem;">📊</span>
+          <div>
+            <h2>प्रगति व विश्लेषण डैशबोर्ड (Clinician & Parent Analytics)</h2>
+            <p style="color: var(--text-muted);">सही बनाम अशुद्ध उच्चारण की विस्तृत रिपोर्ट</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-overview-grid">
+        <div class="stat-box">
+          <div>कुल बोले गए शब्द (Total Attempts)</div>
+          <div class="stat-num stat-total" id="statTotalWords">0</div>
+        </div>
+        <div class="stat-box">
+          <div>सही उच्चारण (Correct) ✅</div>
+          <div class="stat-num stat-correct" id="statCorrectWords">0</div>
+        </div>
+        <div class="stat-box">
+          <div>सुधार की आवश्यकता (Incorrect) ❌</div>
+          <div class="stat-num stat-incorrect" id="statIncorrectWords">0</div>
+        </div>
+        <div class="stat-box">
+          <div>सटीकता दर (Accuracy Rate) 🎯</div>
+          <div class="stat-num" id="statAccuracyRate" style="color: #8b5cf6;">0%</div>
+        </div>
+      </div>
+
+      <div style="background: white; border-radius: 20px; padding: 20px; border: 2px solid #e2e8f0; margin-top: 20px;">
+        <h3 style="margin-bottom: 14px;">हालिया सत्र इतिहास (Recent Practice Logs)</h3>
+        <table style="width: 100%; border-collapse: collapse; text-align: left;" id="sessionHistoryTable">
+          <thead>
+            <tr style="background: #f1f5f9; border-bottom: 2px solid #cbd5e1;">
+              <th style="padding: 10px;">समय</th>
+              <th style="padding: 10px;">लक्ष्य शब्द</th>
+              <th style="padding: 10px;">बोला गया शब्द</th>
+              <th style="padding: 10px;">स्कोर</th>
+              <th style="padding: 10px;">परिणाम</th>
+            </tr>
+          </thead>
+          <tbody id="sessionHistoryBody">
+            <!-- Logs dynamically inserted -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="report-export-box">
+        <div>
+          <h4 style="color: #065f46;">📄 क्लीनिकल प्रोग्रेस रिपोर्ट (PDF/Print)</h4>
+          <p style="color: #047857;">माता-पिता व स्पीच थेरेपिस्ट के लिए आधिकारिक रिपोर्ट प्रिंट करें</p>
+        </div>
+        <button class="btn-bubbly" onclick="exportClinicalReport()">रिपोर्ट प्रिंट करें 🖨️</button>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         MODULE 11: Custom Therapy Session Builder
+         ========================================================================= -->
+    <section id="module-session-builder" class="therapy-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span style="font-size: 2rem;">📋</span>
+          <div>
+            <h2>कस्टम सत्र निर्माता (Custom Session & Wordlist Builder)</h2>
+            <p style="color: var(--text-muted);">थेरेपिस्ट या माता-पिता द्वारा बच्चे के लिए अपनी पसंद के शब्दों की सूची बनाएं</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div style="background: white; padding: 24px; border-radius: 24px; border: 2px solid #e2e8f0;">
+          <h3 style="margin-bottom: 14px;">नया शब्द जोड़ें (Add Custom Target Word)</h3>
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <input type="text" id="customWordInput" class="chat-input" placeholder="हिंदी शब्द (उदा. खिलौना)">
+            <input type="text" id="customTranslitInput" class="chat-input" placeholder="Transliteration (e.g. Khilona)">
+            <input type="text" id="customEmojiInput" class="chat-input" placeholder="इमोजी चिन्ह (उदा. 🧸)">
+            <button class="btn-bubbly" onclick="addCustomWord()">सूची में जोड़ें ➕</button>
+          </div>
+        </div>
+
+        <div style="background: white; padding: 24px; border-radius: 24px; border: 2px solid #e2e8f0;">
+          <h3 style="margin-bottom: 14px;">कस्टम अभ्यास सूची (Current Custom Playlist)</h3>
+          <ul id="customWordsList" style="list-style: none; display: flex; flex-direction: column; gap: 8px;">
+            <!-- Custom items -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         MODULE 12: Oral Motor Face Gym
+         ========================================================================= -->
+    <section id="module-oral-gym" class="therapy-section">
+      <div class="section-header">
+        <div class="section-title">
+          <span style="font-size: 2rem;">👅</span>
+          <div>
+            <h2>मुख व जीभ व्यायाम (Oral Motor Face Gym)</h2>
+            <p style="color: var(--text-muted);">होंठों, जीभ और जबड़े की मांसपेशियों को मजबूत बनाने के खेल</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="gym-grid" id="oralGymContainer">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="hindi_therapy_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
